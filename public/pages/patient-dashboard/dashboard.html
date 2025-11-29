@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthMe - Patient Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://sdk.twilio.com/js/video/releases/2.26.0/twilio-video.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <h1>HealthMe</h1>
+            </div>
+            
+            <div class="user-section">
+                <div class="notification-wrapper" id="notification-btn">
+                    <span class="notification-icon">🔔</span>
+                    <span class="notification-badge" id="notification-badge">0</span>
+                    
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-header">
+                            <span>Notifications</span>
+                            <span class="mark-all-read" id="mark-all-read">Mark all read</span>
+                        </div>
+                        <div class="notification-list" id="notification-list">
+                            <div class="notification-empty">No notifications</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-info">
+                    </div>
+                <div class="user-info">
+                    <span id="user-email"></span>
+                </div>
+                <button id="logout-button" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#log-symptom" class="nav-link active" data-section="log-symptom">Log Symptom</a>
+                <a href="#symptom-history" class="nav-link" data-section="symptom-history">Symptom History</a>
+                <a href="#appointments" class="nav-link" data-section="appointments">Appointments</a>
+                <a href="#messages" class="nav-link" data-section="messages">Messages</a>
+                <a href="#insurance" class="nav-link" data-section="insurance">Insurance</a> <a href="#ai-analysis" class="nav-link" data-section="ai-analysis">AI Analysis</a>
+                <a href="#find-doctor" class="nav-link" data-section="find-doctor">Find a Doctor</a>
+                <!--<a href="#chatbot" class="nav-link" data-section="chatbot">AI ChatBot</a>-->
+                <a href="#video-chat" class="nav-link" data-section="video-chat">Video Chat</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <section id="log-symptom" class="section active">
+                <div class="section-header">
+                    <h2>Log Your Symptoms</h2>
+                </div>
+                <form id="symptom-form" class="form">
+                    <div class="form-group">
+                        <label for="symptoms-input">Symptoms (comma-separated)</label>
+                        <textarea id="symptoms-input" placeholder="e.g., headache, fever, cough" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Log Symptoms</button>
+                </form>
+                <div id="symptom-message" class="message"></div>
+            </section>
+
+            <section id="symptom-history" class="section">
+                <div class="section-header">
+                    <h2>Your Symptom History</h2>
+                </div>
+                <div id="symptom-history-container" class="history-container">
+                    <p class="loading">Loading your history...</p>
+                </div>
+                <div id="symptom-history-message" class="message"></div>
+            </section>
+
+            <section id="appointments" class="section">
+                <div class="section-header">
+                    <h2>Schedule an Appointment</h2>
+                </div>
+                <form id="appointment-form" class="form">
+                    <div class="form-group">
+                        <label for="doctor-select">Select Doctor</label>
+                        <select id="doctor-select" required>
+                            <option value="">Choose a doctor...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointment-date">Preferred Date</label>
+                        <input type="date" id="appointment-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointment-reason">Reason for Visit</label>
+                        <textarea id="appointment-reason" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Schedule</button>
+                </form>
+                <div id="appointment-message" class="message"></div>
+
+                <div class="section-divider"></div>
+                <div class="section-header">
+                    <h2>Your Upcoming Appointments</h2>
+                </div>
+                <div id="appointment-list-container" class="appointments-list">
+                    <p class="loading">Loading appointments...</p>
+                </div>
+            </section>
+
+            <section id="messages" class="section">
+                <div class="section-header">
+                    <h2>Messages</h2>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="message-doctor-filter">View Conversation With</label>
+                    <select id="message-doctor-filter">
+                        <option value="">Select a doctor to view messages...</option>
+                    </select>
+                </div>
+                <div id="message-history-container" class="messages-list">
+                    <p class="loading"></p>
+                </div>
+                <div class="section-divider"></div>
+
+                <form id="message-form" class="form">
+                    <h3 class="form-title">Send a New Message</h3>
+                    <div class="form-group">
+                        <label for="message-doctor-select">Select Doctor</label>
+                        <select id="message-doctor-select" required>
+                            <option value="">Choose a doctor...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-content">Message</label>
+                        <textarea id="message-content" placeholder="Write your message..." rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+                <div id="message-message" class="message"></div>
+            </section>
+
+            <section id="insurance" class="section">
+                <div class="section-header">
+                    <h2>Insurance Policy</h2>
+                    <p>Manage your insurance details</p>
+                </div>
+                <form id="insurance-form" class="form">
+                    <div class="form-group">
+                        <label for="insurance-state">State / Region</label>
+                        <select id="insurance-state" required class="form-input">
+                            <option value="">Select your state...</option>
+                            <option value="AL">Alabama</option>
+                            <option value="AK">Alaska</option>
+                            <option value="AZ">Arizona</option>
+                            <option value="CA">California</option>
+                            <option value="FL">Florida</option>
+                            <option value="GA">Georgia</option>
+                            <option value="NY">New York</option>
+                            <option value="TX">Texas</option>
+                            <option value="WA">Washington</option>
+                            <option value="OTHER">Other / National</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="provider">Insurance Provider</label>
+                        <select id="provider" required class="form-input" disabled>
+                            <option value="">Select a state first...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="policy-number">Policy Number</label>
+                        <input type="text" id="policy-number" required placeholder="e.g., XYZ-123456789">
+                    </div>
+                    <div class="form-group">
+                        <label for="coverage">Coverage Details</label>
+                        <textarea id="coverage" rows="3" placeholder="Optional details..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Insurance</button>
+                </form>
+                
+                <div class="section-divider"></div>
+                <h3>Your Policies</h3>
+                <div id="insurance-list" class="history-container">
+                    <p class="loading">Loading insurance...</p>
+                </div>
+                <div id="insurance-message" class="message"></div>
+            </section>
+
+            <section id="ai-analysis" class="section">
+                <div class="section-header">
+                    <h2>AI Symptom Analysis</h2>
+                    <p>This is not a substitute for professional medical advice.</p>
+                </div>
+                <form id="ai-form-patient" class="form">
+                    <div class="form-group">
+                        <label for="symptoms-input-patient">Symptoms</label>
+                        <textarea id="symptoms-input-patient" required placeholder="Example: fever, cough, headache..." rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Analyze</button>
+                </form>
+                <div id="ai-result-patient" class="message" style="margin-top: 20px;"></div>
+            </section>
+
+            <section id="find-doctor" class="section">
+                <div class="section-header">
+                    <h2>Find a Doctor</h2>
+                    <p>Browse available doctors and specialists.</p>
+                </div>
+                <div id="doctor-list-container" class="doctor-list">
+                    <p class="loading">Loading doctors...</p>
+                </div>
+            </section>
+
+            <section id="chatbot" class="section">
+                <div class="section-header">
+                    <h2>AI ChatBot</h2>
+                    <p>Ask general health questions. Not a substitute for a doctor.</p>
+                </div>
+                <div id="chatbot-history" class="chatbot-messages"></div>
+                <form id="chatbot-form" class="chatbot-form">
+                    <input type="text" id="chatbot-input" placeholder="Type or speak your message..." required>
+                    <button type="button" id="voice-input-btn" class="btn btn-secondary" title="Speak">🎤</button>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </form>
+            </section>
+
+            <section id="video-chat" class="section">
+                <div class="section-header">
+                    <h2>Video Chat</h2>
+                    <p>Join your scheduled video appointment.</p>
+                </div>
+                <div class="section-divider"></div>
+
+                <div class="video-controls">
+                    <input type="text" id="video-room-name-patient" placeholder="Enter Appointment ID / Room Name" class="form-input">
+                    <button id="join-video-btn-patient" class="btn btn-primary">Join Call</button>
+                    <button id="leave-video-btn-patient" class="btn btn-secondary">Leave Call</button>
+                </div>
+
+                <div id="video-room-patient" class="video-container">
+                    <div id="local-video-patient" class="video-participant local">
+                        <div class="video-label">Your Video</div>
+                    </div>
+                    <div id="remote-video-patient" class="video-participant remote">
+                        <div class="video-label">Doctor's Video</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <link rel="stylesheet" href="../../shared/css/voice-assistant.css">
+    <div id="voice-assistant-container"></div>
+    <script src="../../shared/js/voice-assistant.js"></script>
+    <script>
+        fetch('../../shared/voice-assistant.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('voice-assistant-container').innerHTML = html;
+                initializeVoiceAssistant();
+            });
+    </script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

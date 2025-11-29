@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthMe - Admin Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <h1>HealthMe</h1>
+                <span class="role-badge">Admin</span>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <span id="admin-email"></span>
+                </div>
+                <button id="logout-button" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#overview" class="nav-link active" data-section="overview">System Overview</a>
+                <a href="#user-management" class="nav-link" data-section="user-management">User Management</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <section id="overview" class="section active">
+                <div class="section-header">
+                    <h2>System Overview</h2>
+                    <p>Real-time platform statistics.</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Patients</h3>
+                        <div id="stat-patients" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Doctors</h3>
+                        <div id="stat-doctors" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Appointments</h3>
+                        <div id="stat-appointments" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Messages</h3>
+                        <div id="stat-messages" class="stat-value">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="user-management" class="section">
+                <div class="section-header">
+                    <h2>User Management</h2>
+                    <p>View and manage all registered users.</p>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="search-users" placeholder="Search by email..." class="form-input">
+                </div>
+
+                <div class="table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
