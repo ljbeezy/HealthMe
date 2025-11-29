@@ -1,5 +1,7 @@
 HealthMe - Full-Stack Telehealth Platform
 
+Site URL: https://healthme-496r.onrender.com
+
 HealthMe is a comprehensive web application that simulates a modern telehealth service. It connects patients with doctors, allowing them to schedule appointments, log symptoms, chat securely, and conduct real-time video consultations.
 
 This project is built with a Node.js/Express/MongoDB backend and a Vanilla JavaScript frontend, organized into two main single-page applications (SPAs) for patients and doctors.
@@ -50,7 +52,7 @@ Frontend
 
     Structure: Organized as two Single-Page Applications (SPAs) for each user role.
 
-Project Setup
+Project Setup (Local)
 
 1. Backend Setup (healthme-backend)
 
@@ -64,7 +66,7 @@ Bash
 
 npm install
 
-Create a .env file in the healthme-backend root. This is required for the app to run.
+Create a .env file. This is required for the app to run locally.
 Code snippet
 
 MONGO_URI=your_mongodb_connection_string
@@ -81,17 +83,13 @@ TWILIO_API_KEY_SECRET=your_twilio_api_key_secret
 Start the backend server:
 Bash
 
-    node index.js
+    node server.js
 
-    The server should now be running on `.
+    The server should now be running on your local port.
 
 2. Frontend Setup (healthme-frontend)
 
     The frontend is built with static files and requires no build step.
-
-    You must serve the files from a local server. The easiest way is to use the Live Server extension in VS Code.
-
-    Right-click the healthme-frontend/index.html file and select "Open with Live Server".
 
     The application will open, and you can register a new patient and doctor to test.
 
