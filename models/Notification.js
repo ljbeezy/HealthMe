@@ -12,12 +12,15 @@ const notificationSchema = new mongoose.Schema({
   },
   type: { 
     type: String, 
-    enum: ['message', 'appointment', 'system'], 
+    enum: ['message', 'appointment', 'system', 'video_call'], 
     default: 'system' 
   },
   threadParticipant: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User'
+  },
+  roomId: {
+    type: String
   },
   isRead: { 
     type: Boolean, 

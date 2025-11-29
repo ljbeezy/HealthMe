@@ -235,9 +235,18 @@
                 <div class="section-divider"></div>
 
                 <div class="video-controls">
-                    <input type="text" id="video-room-name-patient" placeholder="Enter Appointment ID / Room Name" class="form-input">
-                    <button id="join-video-btn-patient" class="btn btn-primary">Join Call</button>
-                    <button id="leave-video-btn-patient" class="btn btn-secondary">Leave Call</button>
+                    <div>
+                        <label>Select Doctor:</label>
+                        <select id="video-doctor-select-patient" class="form-input">
+                            <option value="">Choose a doctor...</option>
+                        </select>
+                    </div>
+                    <button id="initiate-video-call-btn-patient" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Start Video Call</button>
+                    <div id="video-room-input-container" style="display: none;">
+                        <input type="text" id="video-room-name-patient" placeholder="Enter Appointment ID / Room Name" class="form-input">
+                        <button id="join-video-btn-patient" class="btn btn-primary">Join Call</button>
+                        <button id="leave-video-btn-patient" class="btn btn-secondary">Leave Call</button>
+                    </div>
                 </div>
 
                 <div id="video-room-patient" class="video-container">

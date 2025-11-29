@@ -18,4 +18,6 @@ router.get('/messages', [authMiddleware, isPatient], patientController.getPatien
 router.delete('/messages/:id', [authMiddleware, isPatient], patientController.deleteMessage)
 
 router.get('/doctors', [authMiddleware, isPatient], patientController.getAvailableDoctors);
+router.post('/initiate-video-call', [authMiddleware, isPatient], patientController.initiateVideoCall);
+
 module.exports = router;

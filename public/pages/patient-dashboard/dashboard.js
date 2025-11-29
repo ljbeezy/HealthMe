@@ -45,6 +45,8 @@ let isVoiceMode = false;
 let joinVideoBtnPatient;
 let leaveVideoBtnPatient;
 let videoRoomNamePatient;
+let videoDoctorSelectPatient;
+let initiateVideoCallBtnPatient;
 let localVideoPatient;
 let remoteVideoPatient;
 let activeRoom = null;
@@ -105,6 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
     joinVideoBtnPatient = document.getElementById('join-video-btn-patient');
     leaveVideoBtnPatient = document.getElementById('leave-video-btn-patient');
     videoRoomNamePatient = document.getElementById('video-room-name-patient');
+    videoDoctorSelectPatient = document.getElementById('video-doctor-select-patient');
+    initiateVideoCallBtnPatient = document.getElementById('initiate-video-call-btn-patient');
     localVideoPatient = document.getElementById('local-video-patient');
     remoteVideoPatient = document.getElementById('remote-video-patient');
     chatbotHistory = document.getElementById('chatbot-history');
@@ -193,6 +197,10 @@ function setupFormHandlers() {
     logoutButton?.addEventListener('click', handleLogout);
     joinVideoBtnPatient?.addEventListener('click', joinVideoRoom);
     leaveVideoBtnPatient?.addEventListener('click', leaveVideoRoom);
+    initiateVideoCallBtnPatient?.addEventListener('click', initiateVideoCall);
+    
+    // Populate doctor select
+    fetchDoctorsForVideoCall();
 }
 
 // --- User & Auth ---
@@ -848,6 +856,65 @@ function leaveVideoRoom() {
     if (activeRoom) activeRoom.disconnect();
 }
 
+async function fetchDoctorsForVideoCall() {
+    const token = localStorage.getItem('hm_token');
+    try {
+        const response = await fetch('/api/patient/doctors', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) return;
+        
+        const doctors = await response.json();
+        videoDoctorSelectPatient.innerHTML = '<option value="">Choose a doctor...</option>';
+        doctors.forEach(doctor => {
+            const option = document.createElement('option');
+            option.value = doctor._id;
+            option.textContent = doctor.email;
+            videoDoctorSelectPatient.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching doctors:', error);
+    }
+}
+
+async function initiateVideoCall() {
+    const selectedDoctorId = videoDoctorSelectPatient.value;
+    if (!selectedDoctorId) {
+        alert('Please select a doctor');
+        return;
+    }
+    
+    const roomId = `room_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const token = localStorage.getItem('hm_token');
+    
+    try {
+        const response = await fetch('/api/patient/initiate-video-call', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                doctorId: selectedDoctorId,
+                roomId: roomId
+            })
+        });
+        
+        if (response.ok) {
+            alert('Video call initiated. Doctor will join shortly.');
+            videoRoomNamePatient.value = roomId;
+            document.getElementById('video-room-input-container').style.display = 'block';
+            joinVideoRoom();
+        } else {
+            const error = await response.json();
+            alert('Error: ' + error.message);
+        }
+    } catch (error) {
+        console.error('Error initiating video call:', error);
+        alert('Error initiating video call');
+    }
+}
+
 function startVideoForAppointmentPatient(id) {
     showSection('video-chat');
     navLinks.forEach(l => l.classList.remove('active'));
@@ -931,7 +998,7 @@ function updateNotificationUI(notifications) {
     }
 
     notificationList.innerHTML = unreadNotifications.map(n => `
-        <div class="notification-item unread" onclick="markOneRead('${n._id}', '${n.threadParticipant || ''}', '${n.type}')">
+        <div class="notification-item unread" onclick="markOneRead('${n._id}', '${n.threadParticipant || ''}', '${n.type}', '${n.roomId || ''}')">
             <div>${n.message}</div>
             <span class="notification-time">${new Date(n.createdAt).toLocaleString()}</span>
         </div>
@@ -956,7 +1023,7 @@ async function markAllNotificationsRead() {
     }
 }
 
-async function markOneRead(id, threadParticipantId, notificationType) {
+async function markOneRead(id, threadParticipantId, notificationType, roomId) {
     const token = localStorage.getItem('hm_token');
     try {
         await fetch(`/api/notifications/${id}/read`, {
@@ -974,6 +1041,14 @@ async function markOneRead(id, threadParticipantId, notificationType) {
             messageDoctorSelect.value = threadParticipantId;
             handleMessageDoctorFilterChange({ target: { value: threadParticipantId } });
             notificationDropdown.classList.remove('show');
+        } else if (notificationType === 'video_call' && roomId) {
+            showSection('video-chat');
+            navLinks.forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-section="video-chat"]')?.classList.add('active');
+            videoRoomNamePatient.value = roomId;
+            document.getElementById('video-room-input-container').style.display = 'block';
+            notificationDropdown.classList.remove('show');
+            joinVideoRoom();
         }
     } catch (error) {
         console.error(error);

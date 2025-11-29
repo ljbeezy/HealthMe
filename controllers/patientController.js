@@ -187,3 +187,33 @@ exports.deleteMessage = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+exports.initiateVideoCall = async (req, res) => {
+  const { doctorId, roomId } = req.body;
+
+  if (!doctorId || !roomId) {
+    return res.status(400).json({ message: 'Doctor ID and Room ID are required.' });
+  }
+
+  try {
+    const doctor = await User.findOne({ _id: doctorId, role: 'doctor' });
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found.' });
+    }
+
+    const patient = await User.findById(req.user.id);
+
+    await new Notification({
+      recipient: doctorId,
+      message: `${patient.email} is calling for a video consultation`,
+      type: 'video_call',
+      roomId: roomId,
+      threadParticipant: req.user.id
+    }).save();
+
+    res.json({ message: 'Video call initiated.' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};

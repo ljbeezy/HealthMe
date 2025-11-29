@@ -798,7 +798,7 @@ function updateNotificationUI(notifications) {
     }
 
     notificationList.innerHTML = unreadNotifications.map(n => `
-        <div class="notification-item unread" onclick="markOneRead('${n._id}', '${n.threadParticipant || ''}', '${n.type}')">
+        <div class="notification-item unread" onclick="markOneRead('${n._id}', '${n.threadParticipant || ''}', '${n.type}', '${n.roomId || ''}')">
             <div>${n.message}</div>
             <span class="notification-time">${new Date(n.createdAt).toLocaleString()}</span>
         </div>
@@ -822,7 +822,7 @@ async function markAllNotificationsRead() {
     }
 }
 
-async function markOneRead(id, threadParticipantId, notificationType) {
+async function markOneRead(id, threadParticipantId, notificationType, roomId) {
     const token = localStorage.getItem('hm_token');
     try {
         await fetch(`/api/notifications/${id}/read`, {
@@ -842,6 +842,13 @@ async function markOneRead(id, threadParticipantId, notificationType) {
             displayPatientMessages(threadParticipantId);
             replyContent.focus();
             notificationDropdown.classList.remove('show');
+        } else if (notificationType === 'video_call' && roomId) {
+            showSection('video-chat');
+            navLinks.forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-section="video-chat"]')?.classList.add('active');
+            videoRoomNameDoctor.value = roomId;
+            notificationDropdown.classList.remove('show');
+            joinVideoRoom();
         }
     } catch (error) {
         console.error(error);
